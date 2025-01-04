@@ -2,8 +2,8 @@ import pygame
 import sys
 import math
 
-def spiral_pixel_transition(screen, width, height, tile_size=20, speed=6):
-    """Realiza una transición en espiral pixelada."""
+def spiral_pixel_transition(screen, width, height, tile_size=20, speed=5, sound=None):
+    """Realiza una transición en espiral pixelada con efecto de sonido."""
     # Dividir la pantalla en una cuadrícula de tiles
     rows = math.ceil(height / tile_size)
     cols = math.ceil(width / tile_size)
@@ -18,6 +18,10 @@ def spiral_pixel_transition(screen, width, height, tile_size=20, speed=6):
     clock = pygame.time.Clock()
     revealed_tiles = 0
     total_tiles = len(tiles)
+
+    # Reproducir sonido si se proporciona
+    if sound:
+        sound.play(-1)  # Reproducir en loop
 
     running = True
     while running:
@@ -42,6 +46,10 @@ def spiral_pixel_transition(screen, width, height, tile_size=20, speed=6):
         if revealed_tiles >= total_tiles:
             running = False
 
+    # Detener el sonido al finalizar la transición
+    if sound:
+        sound.stop()
+
 
 def main():
     pygame.init()
@@ -49,7 +57,14 @@ def main():
     # Tamaño de la ventana
     WIDTH, HEIGHT = 800, 600
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Transición en Espiral Pixelada")
+    pygame.display.set_caption("Transición en Espiral Pixelada con Sonido")
+
+    # Cargar efecto de sonido
+    try:
+        sound = pygame.mixer.Sound("transition_sound.wav")  # Ruta al archivo de sonido
+    except pygame.error as e:
+        print(f"No se pudo cargar el sonido: {e}")
+        sound = None
 
     # Loop principal
     running = True
@@ -60,7 +75,7 @@ def main():
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 # Ejecutar la transición al presionar la barra espaciadora
-                spiral_pixel_transition(screen, WIDTH, HEIGHT)
+                spiral_pixel_transition(screen, WIDTH, HEIGHT, sound=sound)
 
         # Fondo verde (representando el mapa o pantalla base)
         screen.fill((0, 255, 0))
